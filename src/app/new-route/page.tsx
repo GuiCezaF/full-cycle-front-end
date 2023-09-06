@@ -1,9 +1,13 @@
 "use client";
 
 import type { FindPlaceFromTextResponseData } from "@googlemaps/google-maps-services-js";
-import { FormEvent } from "react";
+import { FormEvent, useRef } from "react";
+import { useMap } from "../hooks/useMap";
 
 export function NewRoutePage() {
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const map = useMap(mapContainerRef);
+
   async function searchPlaces(event: FormEvent) {
     event.preventDefault();
     const source = (document.getElementById("source") as HTMLInputElement)
@@ -36,26 +40,41 @@ export function NewRoutePage() {
     const directionsResponse = await fetch(
       `http://localhost:3000/directions?originId=${placeSourceId}&destinationId=${placeDestinationId}`
     );
-    const directionsData = await directionsResponse.json()
-
-    
+    const directionsData = await directionsResponse.json();
   }
 
   return (
-    <div>
-      <h1>Nova Rota</h1>
-      <form
-        style={{ display: "flex", flexDirection: "column" }}
-        onSubmit={searchPlaces}
-      >
-        <div>
-          <input id="source" type="text" placeholder="Origem" />
-        </div>
-        <div>
-          <input id="destination" type="text" placeholder="Destino" />
-        </div>
-        <button type="submit">Pesquisar</button>
-      </form>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        height: "100%",
+        width: "100%",
+      }}
+    >
+      <div>
+        <h1>Nova Rota</h1>
+        <form
+          style={{ display: "flex", flexDirection: "column" }}
+          onSubmit={searchPlaces}
+        >
+          <div>
+            <input id="source" type="text" placeholder="Origem" />
+          </div>
+          <div>
+            <input id="destination" type="text" placeholder="Destino" />
+          </div>
+          <button type="submit">Pesquisar</button>
+        </form>
+      </div>
+      <div
+        id="map"
+        style={{
+          height: "100%",
+          width: "100%",
+        }}
+        ref={mapContainerRef}
+      ></div>
     </div>
   );
 }
